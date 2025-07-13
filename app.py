@@ -304,7 +304,7 @@ if session_dates:
                 ]).sort_values("Count", ascending=False)
 
                 # Create tabs for visualizations
-                tab1, tab2 = st.tabs(["Protocol Distribution", "Direction Distribution"])
+                tab1, tab2, tab3 = st.tabs(["Protocol Distribution", "Direction Distribution", "Wallet Activity"])
                 
                 with tab1:
                     # Protocol distribution chart
@@ -318,7 +318,7 @@ if session_dates:
                     )
                     
                     fig_protocol.update_layout(
-                        showlegend=False,
+                        showlegend=True,
                         plot_bgcolor='white',
                         paper_bgcolor='white',
                         title_x=0.5,
@@ -358,6 +358,51 @@ if session_dates:
                     )
                     
                     st.plotly_chart(fig_direction, use_container_width=True)
+
+                with tab3:
+                    # Wallet Activity Analysis
+                    st.markdown("### Wallet Activity Analysis")
+                    activity_df = token_wise.analyze_wallet_activity(selected_date)
+                    
+                    # Display metrics for most active wallet
+                    most_active = activity_df.iloc[0] if not activity_df.empty else None
+                    if most_active is not None:
+                        st.markdown("#### Most Active Wallet")
+                        col1, col2, col3 = st.columns(3)
+                        with col1:
+                            st.metric("Total Transactions", most_active['Total Transactions'])
+                        with col2:
+                            st.metric("Sent Count", most_active['Sent Count'])
+                        with col3:
+                            st.metric("Received Count", most_active['Received Count'])
+                    
+                    # Display full activity table
+                    st.markdown("#### Detailed Wallet Activity")
+                    st.dataframe(
+                        activity_df,
+                        column_config={
+                            "Wallet Address": st.column_config.TextColumn(
+                                "Wallet Address",
+                                help="Solana wallet address",
+                                width="large"
+                            ),
+                            "Transaction Frequency": st.column_config.TextColumn(
+                                "Transactions per Hour",
+                                help="Average number of transactions per hour during active period"
+                            )
+                        },
+                        hide_index=True,
+                        use_container_width=True
+                    )
+
+                    # Add CSV download button for activity data
+                    csv = activity_df.to_csv(index=False)
+                    st.download_button(
+                        label="Download Wallet Activity Report",
+                        data=csv,
+                        file_name=f'wallet_activity_{selected_date.strftime("%Y%m%d_%H%M%S")}.csv',
+                        mime='text/csv',
+                    )
 
             # Display token holders in a data table
             if holders:
