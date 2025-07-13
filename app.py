@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-from testing import TokenWise
+from tokenwise import TokenWise
 from dotenv import load_dotenv
 import os
 from datetime import datetime
