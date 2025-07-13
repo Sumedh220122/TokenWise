@@ -42,7 +42,7 @@ DB_NAME=your_database_name
 1. Clone the repository:
    ```bash
    git clone <repository-url>
-   cd Solana
+   cd TokenWise
    ```
 
 2. Create and activate a virtual environment:
