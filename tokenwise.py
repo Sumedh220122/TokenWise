@@ -196,10 +196,84 @@ class TokenWise:
         
         return df
 
-
-
-
-
-
-
-
+    def analyze_wallet_activity(self, start_date: datetime) -> pd.DataFrame:
+        """
+        Analyzes wallet activity patterns to identify frequent traders
+        Returns a DataFrame with wallet activity statistics
+        """
+        transactions = self.get_transactions(start_date)
+        
+        # Track wallet activity
+        wallet_stats = {}
+        
+        for tx in transactions:
+            # Get the addresses involved
+            from_addr = tx.token_transfers.from_address
+            to_addr = tx.token_transfers.to_address
+            
+            # Initialize wallet stats if not exists
+            for addr in [from_addr, to_addr]:
+                if addr not in wallet_stats:
+                    wallet_stats[addr] = {
+                        'total_transactions': 0,
+                        'sent_count': 0,
+                        'received_count': 0,
+                        'total_amount_sent': 0.0,
+                        'total_amount_received': 0.0,
+                        'protocols_used': set(),
+                        'last_activity': None,
+                        'first_activity': None
+                    }
+            
+            # Update statistics
+            amount = float(tx.token_transfers.amount)
+            timestamp = datetime.fromtimestamp(tx.token_transfers.timestamp)
+            
+            # Sender stats
+            wallet_stats[from_addr]['total_transactions'] += 1
+            wallet_stats[from_addr]['sent_count'] += 1
+            wallet_stats[from_addr]['total_amount_sent'] += amount
+            wallet_stats[from_addr]['protocols_used'].add(tx.token_transfers.protocol)
+            
+            # Update activity timestamps for sender
+            if not wallet_stats[from_addr]['first_activity'] or timestamp < wallet_stats[from_addr]['first_activity']:
+                wallet_stats[from_addr]['first_activity'] = timestamp
+            if not wallet_stats[from_addr]['last_activity'] or timestamp > wallet_stats[from_addr]['last_activity']:
+                wallet_stats[from_addr]['last_activity'] = timestamp
+            
+            # Receiver stats
+            wallet_stats[to_addr]['total_transactions'] += 1
+            wallet_stats[to_addr]['received_count'] += 1
+            wallet_stats[to_addr]['total_amount_received'] += amount
+            wallet_stats[to_addr]['protocols_used'].add(tx.token_transfers.protocol)
+            
+            # Update activity timestamps for receiver
+            if not wallet_stats[to_addr]['first_activity'] or timestamp < wallet_stats[to_addr]['first_activity']:
+                wallet_stats[to_addr]['first_activity'] = timestamp
+            if not wallet_stats[to_addr]['last_activity'] or timestamp > wallet_stats[to_addr]['last_activity']:
+                wallet_stats[to_addr]['last_activity'] = timestamp
+        
+        # Convert to DataFrame
+        activity_data = []
+        for wallet, stats in wallet_stats.items():
+            if stats['total_transactions'] > 0:  # Only include wallets with activity
+                activity_period = (stats['last_activity'] - stats['first_activity']).total_seconds() / 3600 if stats['first_activity'] else 0
+                activity_data.append({
+                    'Wallet Address': wallet,
+                    'Total Transactions': stats['total_transactions'],
+                    'Sent Count': stats['sent_count'],
+                    'Received Count': stats['received_count'],
+                    'Total Amount Sent': f"{stats['total_amount_sent']:,.2f}",
+                    'Total Amount Received': f"{stats['total_amount_received']:,.2f}",
+                    'Protocols Used': ', '.join(stats['protocols_used']),
+                    'First Activity': stats['first_activity'].strftime("%Y-%m-%d %H:%M:%S") if stats['first_activity'] else 'N/A',
+                    'Last Activity': stats['last_activity'].strftime("%Y-%m-%d %H:%M:%S") if stats['last_activity'] else 'N/A',
+                    'Activity Period (hours)': f"{activity_period:.2f}",
+                    'Transaction Frequency': f"{stats['total_transactions'] / (activity_period if activity_period > 0 else 1):.2f}"
+                })
+        
+        # Create DataFrame and sort by total transactions
+        df = pd.DataFrame(activity_data)
+        df = df.sort_values('Total Transactions', ascending=False)
+        
+        return df
