@@ -25,8 +25,6 @@ A real-time analytics dashboard for tracking Solana token holders and transactio
 
 - Python 3.9 or higher
 - MongoDB database
-- Node.js and npm (for Solana web3 interactions)
-- Git
 
 ## Environment Variables
 
@@ -62,12 +60,7 @@ DB_NAME=your_database_name
    ```bash
    pip install -r requirements.txt
    ```
-
-4. Install Node.js dependencies:
-   ```bash
-   npm install
-   ```
-
+   
 ## Running the Application
 
 1. Ensure MongoDB is running and accessible
