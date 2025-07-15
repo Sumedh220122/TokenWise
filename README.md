@@ -41,7 +41,7 @@ DB_NAME=your_database_name
 
 1. Clone the repository:
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/Sumedh220122/TokenWise.git
    cd TokenWise
    ```
 
@@ -126,7 +126,3 @@ DB_NAME=your_database_name
 3. Commit your changes
 4. Push to the branch
 5. Create a Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details. 
