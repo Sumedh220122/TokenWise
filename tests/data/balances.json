@@ -1,0 +1,57 @@
+{
+    "balances": [{
+        "jsonrpc": "2.0",
+        "id": "1",
+        "result": {
+            "context": {
+                "slot": 389692472,
+                "apiVersion": "2.2.7"
+            },
+            "value": 875807047116042
+        }
+    },
+    {
+        "jsonrpc": "2.0",
+        "id": "1",
+        "result": {
+            "context": {
+                "slot": 389692473,
+                "apiVersion": "2.2.7"
+            },
+            "value": 632564923
+        }
+    },
+    {
+        "jsonrpc": "2.0",
+        "id": "1",
+        "result": {
+            "context": {
+                "slot": 389692476,
+                "apiVersion": "2.2.7"
+            },
+            "value": 317285052
+        }
+    },
+    {
+        "jsonrpc": "2.0",
+        "id": "1",
+        "result": {
+            "context": {
+                "slot": 389692477,
+                "apiVersion": "2.2.7"
+            },
+            "value": 4331808906
+        }
+    },
+    {
+        "jsonrpc": "2.0",
+        "id": "1",
+        "result": {
+            "context": {
+                "slot": 389692479,
+                "apiVersion": "2.2.7"
+            },
+            "value": 177829206
+        }
+    }]
+}
